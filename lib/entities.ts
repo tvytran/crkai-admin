@@ -37,13 +37,13 @@ export const entities: Record<string, EntityConfig> = {
     crud: "r",
   },
   "humor-mix": {
-    table: "humor_mix",
+    table: "humor_flavor_mix",
     label: "Humor Mix",
     slug: "humor-mix",
     crud: "ru",
   },
   "example-captions": {
-    table: "example_captions",
+    table: "caption_examples",
     label: "Example Captions",
     slug: "example-captions",
     crud: "crud",
@@ -92,7 +92,7 @@ export const entities: Record<string, EntityConfig> = {
     crud: "r",
   },
   "llm-responses": {
-    table: "llm_responses",
+    table: "llm_model_responses",
     label: "LLM Responses",
     slug: "llm-responses",
     crud: "r",
@@ -104,7 +104,7 @@ export const entities: Record<string, EntityConfig> = {
     crud: "crud",
   },
   "whitelisted-emails": {
-    table: "whitelisted_email_addresses",
+    table: "whitelist_email_addresses",
     label: "Whitelisted Emails",
     slug: "whitelisted-emails",
     crud: "crud",
