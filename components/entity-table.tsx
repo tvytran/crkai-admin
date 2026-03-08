@@ -53,9 +53,30 @@ export function EntityTable({
   canDelete,
 }: EntityTableProps) {
   if (error) {
+    const isTableMissing =
+      error.includes("does not exist") || error.includes("undefined_table");
     return (
-      <div className="text-red-400 bg-red-900/20 rounded-xl p-6 border border-red-800">
-        Error loading {title.toLowerCase()}: {error}
+      <div>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-2xl font-bold">{title}</h1>
+        </div>
+        <div className="bg-red-900/20 rounded-xl p-6 border border-red-800">
+          {isTableMissing ? (
+            <>
+              <p className="text-red-400 font-medium mb-2">
+                Table &quot;{tableName}&quot; does not exist yet
+              </p>
+              <p className="text-gray-400 text-sm">
+                This table needs to be created in your Supabase database before
+                you can manage {title.toLowerCase()} here.
+              </p>
+            </>
+          ) : (
+            <p className="text-red-400">
+              Error loading {title.toLowerCase()}: {error}
+            </p>
+          )}
+        </div>
       </div>
     );
   }
