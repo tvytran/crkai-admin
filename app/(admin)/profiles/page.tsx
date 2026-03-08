@@ -17,7 +17,7 @@ export default async function ProfilesPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold">Profiles</h1>
+        <h1 className="text-2xl font-bold">Users</h1>
         <span className="text-sm text-gray-400">
           {profiles?.length ?? 0} total
         </span>
@@ -28,24 +28,12 @@ export default async function ProfilesPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-800 bg-gray-900/50">
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">
-                  ID
-                </th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">
-                  Email
-                </th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">
-                  Name
-                </th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">
-                  Superadmin
-                </th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">
-                  In Study
-                </th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">
-                  Created
-                </th>
+                <th className="text-left py-3 px-4 text-gray-400 font-medium">ID</th>
+                <th className="text-left py-3 px-4 text-gray-400 font-medium">Email</th>
+                <th className="text-left py-3 px-4 text-gray-400 font-medium">Name</th>
+                <th className="text-left py-3 px-4 text-gray-400 font-medium">Superadmin</th>
+                <th className="text-left py-3 px-4 text-gray-400 font-medium">In Study</th>
+                <th className="text-left py-3 px-4 text-gray-400 font-medium">Created</th>
               </tr>
             </thead>
             <tbody>
@@ -58,9 +46,7 @@ export default async function ProfilesPage() {
                     {profile.id.slice(0, 8)}...
                   </td>
                   <td className="py-3 px-4 text-gray-200">
-                    {profile.email ?? (
-                      <span className="text-gray-600">null</span>
-                    )}
+                    {profile.email ?? <span className="text-gray-600">null</span>}
                   </td>
                   <td className="py-3 px-4 text-gray-200">
                     {profile.first_name || profile.last_name
@@ -91,10 +77,8 @@ export default async function ProfilesPage() {
                   </td>
                   <td className="py-3 px-4 text-gray-400 text-xs">
                     {profile.created_datetime_utc
-                      ? new Date(
-                          profile.created_datetime_utc
-                        ).toLocaleDateString()
-                      : "—"}
+                      ? new Date(profile.created_datetime_utc).toLocaleDateString()
+                      : "\u2014"}
                   </td>
                 </tr>
               ))}

@@ -34,21 +34,11 @@ export default async function CaptionsPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-800 bg-gray-900/50">
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">
-                  Content
-                </th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">
-                  Image ID
-                </th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">
-                  Profile
-                </th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">
-                  Public
-                </th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">
-                  Created
-                </th>
+                <th className="text-left py-3 px-4 text-gray-400 font-medium">Content</th>
+                <th className="text-left py-3 px-4 text-gray-400 font-medium">Image ID</th>
+                <th className="text-left py-3 px-4 text-gray-400 font-medium">Profile</th>
+                <th className="text-left py-3 px-4 text-gray-400 font-medium">Public</th>
+                <th className="text-left py-3 px-4 text-gray-400 font-medium">Created</th>
               </tr>
             </thead>
             <tbody>
@@ -83,10 +73,8 @@ export default async function CaptionsPage() {
                   </td>
                   <td className="py-3 px-4 text-gray-400 text-xs whitespace-nowrap">
                     {caption.created_datetime_utc
-                      ? new Date(
-                          caption.created_datetime_utc
-                        ).toLocaleString()
-                      : "—"}
+                      ? new Date(caption.created_datetime_utc).toLocaleString()
+                      : "\u2014"}
                   </td>
                 </tr>
               ))}

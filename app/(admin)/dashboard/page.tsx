@@ -32,7 +32,6 @@ async function getStats() {
       .order("created_datetime_utc", { ascending: false })
       .limit(5),
     supabase.rpc("get_top_voted_captions").then((res) => {
-      // Fallback if RPC doesn't exist
       if (res.error) {
         return supabase
           .from("caption_votes")
@@ -72,7 +71,6 @@ async function getStats() {
       .eq("is_superadmin", true),
   ]);
 
-  // Compute top captioners
   const captionerCounts: Record<string, number> = {};
   mostActiveCaptioners?.forEach((c: { profile_id: string }) => {
     captionerCounts[c.profile_id] = (captionerCounts[c.profile_id] || 0) + 1;
@@ -81,7 +79,6 @@ async function getStats() {
     .sort(([, a], [, b]) => b - a)
     .slice(0, 5);
 
-  // Compute vote aggregations manually
   const voteSums: Record<string, number> = {};
   if (topVotedCaptions && Array.isArray(topVotedCaptions)) {
     topVotedCaptions.forEach(
@@ -90,11 +87,10 @@ async function getStats() {
       }
     );
   }
-  const topCaptionIds = Object.entries(voteSums)
+  Object.entries(voteSums)
     .sort(([, a], [, b]) => b - a)
     .slice(0, 5);
 
-  // Compute captions per day (last 7 days)
   const dayCounts: Record<string, number> = {};
   const now = new Date();
   for (let i = 6; i >= 0; i--) {
@@ -109,11 +105,8 @@ async function getStats() {
     }
   });
 
-  // Avg captions per image
   const avgCaptionsPerImage =
     imageCount && captionCount ? (captionCount / imageCount).toFixed(1) : "0";
-
-  // Avg votes per caption
   const avgVotesPerCaption =
     captionCount && voteCount ? (voteCount / captionCount).toFixed(1) : "0";
 
@@ -129,7 +122,6 @@ async function getStats() {
     recentCaptions: recentCaptions ?? [],
     recentImages: recentImages ?? [],
     topCaptioners,
-    topCaptionIds,
     dayCounts,
     avgCaptionsPerImage,
     avgVotesPerCaption,
@@ -169,72 +161,30 @@ function MiniBar({ value, max }: { value: number; max: number }) {
 
 export default async function DashboardPage() {
   const stats = await getStats();
-
   const maxDay = Math.max(...Object.values(stats.dayCounts), 1);
 
   return (
     <div>
       <h1 className="text-2xl font-bold mb-8">Dashboard</h1>
 
-      {/* Main Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <StatCard
-          label="Total Profiles"
-          value={stats.profileCount}
-          color="text-blue-400"
-        />
-        <StatCard
-          label="Total Images"
-          value={stats.imageCount}
-          color="text-green-400"
-        />
-        <StatCard
-          label="Total Captions"
-          value={stats.captionCount}
-          color="text-purple-400"
-        />
-        <StatCard
-          label="Total Votes"
-          value={stats.voteCount}
-          color="text-orange-400"
-        />
+        <StatCard label="Total Profiles" value={stats.profileCount} color="text-blue-400" />
+        <StatCard label="Total Images" value={stats.imageCount} color="text-green-400" />
+        <StatCard label="Total Captions" value={stats.captionCount} color="text-purple-400" />
+        <StatCard label="Total Votes" value={stats.voteCount} color="text-orange-400" />
       </div>
 
-      {/* Secondary Stats */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-        <StatCard
-          label="Humor Flavors"
-          value={stats.flavorCount}
-          color="text-pink-400"
-        />
-        <StatCard
-          label="Avg Captions/Image"
-          value={stats.avgCaptionsPerImage}
-          color="text-cyan-400"
-        />
-        <StatCard
-          label="Avg Votes/Caption"
-          value={stats.avgVotesPerCaption}
-          color="text-yellow-400"
-        />
-        <StatCard
-          label="In Study"
-          value={stats.studyProfileCount}
-          color="text-emerald-400"
-        />
-        <StatCard
-          label="Superadmins"
-          value={stats.superadminCount}
-          color="text-red-400"
-        />
+        <StatCard label="Humor Flavors" value={stats.flavorCount} color="text-pink-400" />
+        <StatCard label="Avg Captions/Image" value={stats.avgCaptionsPerImage} color="text-cyan-400" />
+        <StatCard label="Avg Votes/Caption" value={stats.avgVotesPerCaption} color="text-yellow-400" />
+        <StatCard label="In Study" value={stats.studyProfileCount} color="text-emerald-400" />
+        <StatCard label="Superadmins" value={stats.superadminCount} color="text-red-400" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Captions per Day Chart */}
         <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
-          <h2 className="text-lg font-semibold mb-4">
-            Captions Created (Last 7 Days)
-          </h2>
+          <h2 className="text-lg font-semibold mb-4">Captions Created (Last 7 Days)</h2>
           <div className="space-y-3">
             {Object.entries(stats.dayCounts).map(([day, count]) => (
               <div key={day} className="flex items-center gap-3">
@@ -246,19 +196,14 @@ export default async function DashboardPage() {
                   })}
                 </span>
                 <MiniBar value={count} max={maxDay} />
-                <span className="text-sm text-gray-300 w-10 text-right">
-                  {count}
-                </span>
+                <span className="text-sm text-gray-300 w-10 text-right">{count}</span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Top Captioners */}
         <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
-          <h2 className="text-lg font-semibold mb-4">
-            Top Caption Writers
-          </h2>
+          <h2 className="text-lg font-semibold mb-4">Top Caption Writers</h2>
           <div className="space-y-3">
             {stats.topCaptioners.map(([profileId, count], i) => (
               <div key={profileId} className="flex items-center gap-3">
@@ -278,9 +223,7 @@ export default async function DashboardPage() {
                 <span className="text-sm text-gray-400 font-mono truncate flex-1">
                   {profileId.slice(0, 8)}...
                 </span>
-                <span className="text-sm font-semibold text-orange-400">
-                  {count} captions
-                </span>
+                <span className="text-sm font-semibold text-orange-400">{count} captions</span>
               </div>
             ))}
             {stats.topCaptioners.length === 0 && (
@@ -291,23 +234,13 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Captions */}
         <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
           <h2 className="text-lg font-semibold mb-4">Recent Captions</h2>
           <div className="space-y-3">
             {stats.recentCaptions.map(
-              (c: {
-                id: string;
-                content: string;
-                created_datetime_utc: string;
-              }) => (
-                <div
-                  key={c.id}
-                  className="bg-gray-800 rounded-lg p-3 border border-gray-700"
-                >
-                  <p className="text-sm text-gray-200 line-clamp-2">
-                    {c.content}
-                  </p>
+              (c: { id: string; content: string; created_datetime_utc: string }) => (
+                <div key={c.id} className="bg-gray-800 rounded-lg p-3 border border-gray-700">
+                  <p className="text-sm text-gray-200 line-clamp-2">{c.content}</p>
                   <p className="text-xs text-gray-500 mt-1">
                     {new Date(c.created_datetime_utc).toLocaleString()}
                   </p>
@@ -317,27 +250,17 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* Recent Images */}
         <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
           <h2 className="text-lg font-semibold mb-4">Recent Images</h2>
           <div className="space-y-3">
             {stats.recentImages.map(
-              (img: {
-                id: string;
-                created_datetime_utc: string;
-                profile_id: string;
-                url: string;
-              }) => (
+              (img: { id: string; created_datetime_utc: string; profile_id: string; url: string }) => (
                 <div
                   key={img.id}
                   className="flex items-center gap-3 bg-gray-800 rounded-lg p-3 border border-gray-700"
                 >
                   {img.url && (
-                    <img
-                      src={img.url}
-                      alt=""
-                      className="w-10 h-10 rounded object-cover"
-                    />
+                    <img src={img.url} alt="" className="w-10 h-10 rounded object-cover" />
                   )}
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-gray-300 font-mono truncate">
