@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase-admin";
+import { createClient } from "@/lib/supabase-server";
 import { NextResponse } from "next/server";
 import { allowedTables } from "@/lib/entities";
 
@@ -38,11 +39,20 @@ export async function PUT(
   }
 
   const body = await request.json();
+  const serverClient = await createClient();
+  const { data: { user } } = await serverClient.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const supabase = createAdminClient();
 
   const { data, error } = await supabase
     .from(table)
-    .update(body)
+    .update({
+      ...body,
+      modified_by_user_id: user.id,
+    })
     .eq("id", id)
     .select()
     .single();

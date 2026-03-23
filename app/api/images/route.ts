@@ -1,8 +1,15 @@
 import { createAdminClient } from "@/lib/supabase-admin";
+import { createClient } from "@/lib/supabase-server";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   const body = await request.json();
+  const serverClient = await createClient();
+  const { data: { user } } = await serverClient.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const supabase = createAdminClient();
 
   const { data, error } = await supabase
@@ -13,6 +20,8 @@ export async function POST(request: Request) {
       is_public: body.is_public ?? false,
       is_common_use: body.is_common_use ?? false,
       additional_context: body.additional_context || null,
+      created_by_user_id: user.id,
+      modified_by_user_id: user.id,
     })
     .select()
     .single();
