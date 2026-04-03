@@ -74,6 +74,12 @@ export async function DELETE(
     return NextResponse.json({ error: "Invalid table" }, { status: 400 });
   }
 
+  const serverClient = await createClient();
+  const { data: { user } } = await serverClient.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const supabase = createAdminClient();
 
   const { error } = await supabase.from(table).delete().eq("id", id);

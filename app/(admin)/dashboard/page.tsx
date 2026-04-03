@@ -87,7 +87,7 @@ async function getStats() {
       }
     );
   }
-  Object.entries(voteSums)
+  const topVoted = Object.entries(voteSums)
     .sort(([, a], [, b]) => b - a)
     .slice(0, 5);
 
@@ -122,6 +122,7 @@ async function getStats() {
     recentCaptions: recentCaptions ?? [],
     recentImages: recentImages ?? [],
     topCaptioners,
+    topVoted,
     dayCounts,
     avgCaptionsPerImage,
     avgVotesPerCaption,
